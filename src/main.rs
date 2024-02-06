@@ -1,3 +1,5 @@
+use std::io;
+
 #[derive(Debug, PartialEq, Clone)]
 enum PlusMinus {
     Positive,
@@ -89,5 +91,11 @@ fn evaluate(mut expression: Vec<Token>) -> Token{
 }
 
 fn main() {
-    evaluate(string_to_tokens("-1.564 / 3.4 * ( 2 + 5 ^ ( 3 * 2 ) ) 3ads".to_string()));
+    let mut user_input = String::new();
+
+    io::stdin()
+        .read_line(&mut user_input)
+        .expect("Failed to read line");
+
+    evaluate(string_to_tokens(user_input.trim().to_string()));
 }
