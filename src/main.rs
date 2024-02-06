@@ -43,9 +43,23 @@ fn evaluate(mut expression: Vec<Token>) -> Token{
     //evaluate all parenthesis
     while let Some(index) = expression.iter().position(|x| x == &Token::Parenthetical(PlusMinus::Positive)) {
         println!("evaluating parenthesis");
-        let closing_index = expression.iter().rposition(|x| x == &Token::Parenthetical(PlusMinus::Negative)).expect("missing closing parenthesis");
+        //scan for matching closing parenthesis
+        let closing_index: usize = {
+            let mut paren_count = 1;
+            let mut pointer = index;
+            while paren_count > 0 {
+                pointer += 1;
+                match expression.get(pointer) {
+                    None => panic!("missing closing parenthesis"),
+                    Some(Token::Parenthetical(PlusMinus::Positive)) => paren_count += 1,
+                    Some(Token::Parenthetical(PlusMinus::Negative)) => paren_count -= 1,
+                    Some(_) => (),
+                }
+            }
+            pointer
+        };
         let sub_expression = evaluate(expression[index+1..closing_index].to_vec());
-        expression.splice(index..closing_index+1, vec![sub_expression]);
+        expression.splice(index..closing_index + 1, vec![sub_expression]);
     }
 
     println!("evaluating {:?} for exponents", &expression);
